@@ -10,12 +10,11 @@ class IntegerConverterTest {
 
     // final IntegerConverter subject = new IntegerConverter();
 
-    // @Test
-    // void testNull() {
-    //     assertEquals(0, subject.convert(null));
-    //     assertEquals(0, subject.convert(""));
-    //     assertEquals(0, subject.convert(" "));
-    // }
+    @Test
+    void testNull() {
+        // assertEquals(0, subject.convert(""));
+        // assertEquals(0, subject.convert(" "));
+    }
 
     // @ParameterizedTest
     // @CsvSource(value = {

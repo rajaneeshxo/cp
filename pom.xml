@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
 
     <dependencyManagement>
@@ -24,8 +24,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            
         </dependencies>
     </dependencyManagement>
 
@@ -36,7 +34,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <!-- min version required to be compatible with -->
+            <version>1.18.30</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -59,14 +58,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.source}</target>
-                    <!-- remove spaces
-                    <compilerArgs> - - enable-preview</compilerArgs>
-                    -->
-                </configuration>
+                <version>3.12.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
