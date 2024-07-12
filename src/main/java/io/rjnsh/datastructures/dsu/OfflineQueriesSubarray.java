@@ -18,13 +18,11 @@ public class OfflineQueriesSubarray {
     }
 
     private void processQuery(int left, int right, int colour, int[] nodes, UF uf) {
-        int freeNode = uf.find(left);
+        int freeNode = uf.segmentEnd[left];
 
         while (freeNode <= right) {
             // colour node 
             nodes[freeNode] = colour;
-
-            // current node is coloured, update next freeNode
             if (freeNode < right && freeNode == uf.segmentEnd[freeNode]) {
                 uf.union(freeNode, freeNode + 1);
             }
@@ -35,7 +33,7 @@ public class OfflineQueriesSubarray {
             }
 
             // jump to the next freeNode
-            freeNode = uf.find(freeNode + 1);
+            freeNode = uf.segmentEnd[freeNode + 1];
         }
     }
 }
@@ -62,7 +60,8 @@ class UF {
     public int find(int x) {
         if (x == parent[x]) return x;
 
-        return parent[x] = find(parent[x]);
+        parent[x] = find(parent[x]);
+        return parent[x];
     }
 
     public boolean union(int x, int y) {

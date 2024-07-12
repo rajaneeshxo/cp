@@ -1,38 +1,81 @@
 package io.rjnsh.datastructures.dsu;
 
+import java.util.Arrays;
+
 public class DSU2D {
-    int[] parent;
-    int[] size;
-    int components;
-    private static final int[][] DIRS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private static final int[][] DIR = new int[][] {
+        {0, 1},
+        {1, 0}
+    };
 
-    public DSU2D(final int[][] grid) {
-        final int ROWS = grid.length;
-        final int COLS = grid[0].length;
-        this.parent = new int[ROWS * COLS];
-        this.size = new int[ROWS * COLS];
-        initFromGrid(grid, ROWS, COLS);
-    }
+    public int findMaxFish(int[][] grid) {
+        int ans = 0;
+        if (grid == null || grid.length == 0) {
+            return ans;
+        }
 
-    private void initFromGrid(int[][] grid, int ROWS, int COLS) {
-        for (int r = 0;r < ROWS;r++) {
-            for (int c = 0;c < COLS;c++) {
-                int currCell = r * COLS + c;
-                if (grid[r][c] == -1) {
-                    parent[currCell] = -1;
+        final int R = grid.length;
+        final int C = grid[0].length;
+
+        // init nodes from grid
+        UF uf = new UF(R * C);
+        for (int row = 0;row < R;row++) {
+            for (int col = 0;col < C;col++) {
+                if (grid[row][col] == 0) {
                     continue;
                 }
 
-                makeSet(currCell);
-                // aggregate, count overall
+                uf.addNode(row * C + col, grid[row][col]);
             }
         }
+
+        for (int row = 0;row < R;row++) {
+            for (int col = 0;col < C;col++) {
+                if (grid[row][col] == 0) {
+                    continue;
+                }
+
+                int currCell = row * C + col;
+                for (int[] dir :  DIR) {
+                    int nx = row + dir[0];
+                    int ny = col + dir[1];
+
+                    if (nx < 0 || nx >= R || ny < 0 || ny >= C || grid[nx][ny] == 0) {
+                        continue;
+                    }
+
+                    uf.union(currCell, nx * C + ny);
+                }
+            }
+        }
+
+        // get the components
+        for (int i = 0;i < R * C;i++) {
+            if (uf.parent[i] == i) {
+                ans = Math.max(uf.fishes[i] , ans);
+            }
+        }
+
+        return ans;
+    }
+}
+
+class UF {
+    int[] parent;
+    int[] size;
+    int[] fishes;
+    
+    public UF (final int N) {
+        this.parent = new int[N];
+        this.size = new int[N];
+        this.fishes = new int[N];
+        Arrays.fill(parent, N);
     }
 
-    private void makeSet(int x) {
-        parent[x] = x;
-        size[x] = 1;
-        components++;
+    public void addNode(int node, int fishCount) {
+        parent[node] = node;
+        fishes[node] = fishCount;
+        size[node] = 1;
     }
 
     public int find(int x) {
@@ -43,13 +86,6 @@ public class DSU2D {
         return parent[x] = find(parent[x]);
     }
 
-    public boolean areConnected(int x, int y) {
-        int parX = find(x);
-        int parY = find(y);
-
-        return parX == parY;
-    }
-
     public boolean union(int x, int y) {
         int px = find(x);
         int py = find(y);
@@ -57,15 +93,16 @@ public class DSU2D {
         if (px == py) {
             return false;
         }
-
         if (size[px] < size[py]) {
             int temp = px;
             px = py;
             py = temp;
         }
 
-        parent[py] = px;
         size[px] += size[py];
+
+        fishes[px] += fishes[py];
+        parent[py] = px;
         return true;
     }
 }
